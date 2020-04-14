@@ -5,5 +5,42 @@
   </head>
   <body>
     <h1>Testing against localhost:7777</h1>
+    <script>
+      function getProm(url) {
+    console.log("getProm " + url);
+    new Promise(function(resolve, reject) {
+	var req = new XMLHttpRequest();
+	req.open('GET', url);
+	req.responseType = 'arraybuffer';
+	
+	req.onload = function() {
+	    console.log("http get returned retrieving " + url);
+            // This is called even on 404 etc
+            // so check the status
+            if (req.status == 200) {
+		resolve(new Int8Array(req.response));
+            }
+            else {
+		reject(Error(req.getResponseHeader("Trailer")));
+            }
+	};
+	
+	req.onerror = function(e) {
+            reject(Error("Network Error"));
+	};
+	
+	req.send();
+    }).then(function(result, err) {
+        if (err != null)
+            console.log(err);
+        else {
+            console.log(result);
+	}
+    }, function(err) {
+	console.log(err);
+    });
+      }
+      getProm("localhost:7777");
+    </script>
   </body>
 </html>
